@@ -1,0 +1,117 @@
+<div class="container">
+    <h1>Ainsley History</h1>
+    <hr>
+    <h3>Door Openings since <%= @earliestDate %></h3>
+    <svg class="hist-chart"></svg>
+    <h3>Average Door Openings per Weekday</h3>
+    <svg class="avg-chart"></svg>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script type="text/javascript">
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 900 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+var svg = d3.select(".hist-chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var x = d3.time.scale().range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .ticks(10);
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(5);
+
+var data = [<%= raw(@counts.join(', ')) %>];
+
+var xmin = new Date(data[0]['date']);
+var xmax = new Date(data[data.length-1]['date']);
+
+x.domain([xmin,xmax]);
+y.domain([0, d3.max(data, function(d) { return d['count']; })]);
+
+var barWidth = (x(xmax) - x(xmin))/data.length -1;
+
+svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(3," + height + ")")
+  .call(xAxis);
+
+svg.append("g")
+  .attr("class", "y axis")
+  .call(yAxis)
+.append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 6)
+  .attr("dy", ".71em")
+  .style("text-anchor", "end")
+  .text("Openings");
+
+svg.selectAll(".hist-bar")
+  .data(data)
+.enter().append("rect")
+  .attr("class", "hist-bar")
+  .attr("x", function(d) { return x(new Date(d['date']))+1; })
+  .attr("width", barWidth)
+  .attr("y", function(d) { return y(d['count']); })
+  .attr("height", function(d) { return height - y(d['count']); });
+</script>
+
+<script type="text/javascript">
+var data = [<%= raw(@averages.join(', ')) %>];
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 900 - margin.left - margin.right,
+    height = 200 - margin.top - margin.bottom;
+
+var svg = d3.select(".avg-chart")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+var x = d3.scale.ordinal()
+    .domain(['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'])
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .domain([0, d3.max(data, function(d) { return d['count']; })])
+    .range([height, 10]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom")
+    .ticks(7);
+
+svg.append("g")
+  .attr("class", "x axis")
+  .attr("transform", "translate(3," + height + ")")
+  .call(xAxis);
+
+var bar = svg.selectAll(".avg-bar").data(data).enter()
+
+bar.append("rect")
+  .attr("class", "avg-bar")
+  .attr("x", function(d) { return x(d['wday'])})
+  .attr("width", x.rangeBand())
+  .attr("y", function(d) { return y(d['count']); })
+  .attr("height", function(d) { return height - y(d['count']); })
+
+bar.append("text")
+  .attr("x", function(d) { return x(d['wday']) + x.rangeBand()/2 - 5; })
+  .attr("y", function(d) { return y(d['count']); })
+  .attr("dy", "-0.5em")
+  .text(function(d) { return d['count']; });
+</script>

@@ -1,0 +1,41 @@
+/*
+  Place all the styles related to the matching controller here.
+  They will automatically be included in application.css.
+*/
+
+body {
+  font: 10px 'Open Sans', sans-serif;
+  font-weight: 700;
+}
+
+/* BARGRAPH STYLE */
+.hist-bar {
+  fill: #81CBEF;
+}
+
+.hist-bar:hover {
+  fill: #C0E8FB;
+}
+
+.avg-bar {
+  fill: #E62C52;
+}
+
+.avg-bar:hover {
+  fill: #FE7575;
+}
+
+.axis {
+  font: 10px 'Open Sans', sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
