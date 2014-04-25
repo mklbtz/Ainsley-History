@@ -1,4 +1,4 @@
-== Ainsly History Read-me
+== Ainsley History Read-me
 
 * Built with Ruby 2.1.1p76 and Rails 4.1.0
 
